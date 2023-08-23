@@ -1,0 +1,43 @@
+#include <iostream>
+#include <string>
+#include <unordered_map>
+#include <queue>
+
+class Solution {
+public:
+    std::string reorganizeString(std::string s) {
+        std::unordered_map<char, int> charCount;
+        for (char c : s) {
+            charCount[c]++;
+        }
+        
+        std::priority_queue<std::pair<int, char>> maxHeap;
+        for (auto entry : charCount) {
+            maxHeap.push({entry.second, entry.first});
+        }
+        
+        std::string result = "";
+        while (!maxHeap.empty()) {
+            auto first = maxHeap.top(); maxHeap.pop();
+            if (result.empty() || result.back() != first.second) {
+                result += first.second;
+                if (first.first > 1) {
+                    maxHeap.push({first.first - 1, first.second});
+                }
+            } else {
+                if (maxHeap.empty()) {
+                    return ""; // Impossible to rearrange
+                }
+                auto second = maxHeap.top(); maxHeap.pop();
+                result += second.second;
+                if (second.first > 1) {
+                    maxHeap.push({second.first - 1, second.second});
+                }
+                maxHeap.push(first);
+            }
+        }
+        
+        return result;
+    }
+};
+
